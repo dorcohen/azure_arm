@@ -2,14 +2,14 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "nsg": { "type": "object" },
+        "resource": { "type": "object" },
         "nsgRoles": { "type": "object" }
     },
     "variables": {},
     "resources": [
         {
             "apiVersion": "2017-10-01",
-            "name": "[parameters('nsg').name]",
+            "name": "[parameters('resource').nsg.name]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "location": "[resourceGroup().location]",
             "properties": {
