@@ -41,16 +41,15 @@
                 "backendAddressPools": [ { "name": "[parameters('resource').loadBalancer.backend.name]" } ],
                 "copy": [{
                     "name": "loadBalancingRules",
-                    "count": "[length(parameters('lbRules').lbRules)]",
+                    "count": "[length(parameters('lbRules'))]",
                     "input": {
-                        "lun": "[copyIndex('loadBalancingRules')]",
-                        "name": "[parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].name]",
+                        "name": "[parameters('lbRules')[copyIndex('loadBalancingRules')].name]",
                         "properties": {
                             "frontendIPConfiguration": {
                                 "id": "[variables('frontEndIPConfigID')]"
                             },
-                            "frontendPort": "[parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].frontendPort]",
-                            "backendPort": "[parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].backendPort]",
+                            "frontendPort": "[parameters('lbRules')[copyIndex('loadBalancingRules')].frontendPort]",
+                            "backendPort": "[parameters('lbRules')[copyIndex('loadBalancingRules')].backendPort]",
                             "enableFloatingIP": false,
                             "idleTimeoutInMinutes": 4,
                             "protocol": "Tcp",
@@ -60,7 +59,7 @@
                                 "id": "[variables('lbPoolID')]"
                             },
                             "probe": {
-                                "id": "[concat(variables('lbId'),'/probes/',parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].probeName)]"
+                                "id": "[concat(variables('lbId'),'/probes/',parameters('lbRules')[copyIndex('loadBalancingRules')].probeName)]"
                             }
                         }
                     }
