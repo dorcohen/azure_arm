@@ -50,11 +50,11 @@
                             },
                             "frontendPort": "[parameters('lbRules')[copyIndex('loadBalancingRules')].frontendPort]",
                             "backendPort": "[parameters('lbRules')[copyIndex('loadBalancingRules')].backendPort]",
-                            "enableFloatingIP": false,
-                            "idleTimeoutInMinutes": 4,
-                            "protocol": "Tcp",
-                            "loadDistribution": "SourceIP",
-                            "disableOutboundSnat": false,
+                            "enableFloatingIP": "[parameters('lbRules')[copyIndex('loadBalancingRules')].enableFloatingIP]",
+                            "idleTimeoutInMinutes": "[parameters('lbRules')[copyIndex('loadBalancingRules')].idleTimeoutInMinutes]",
+                            "protocol": "[parameters('lbRules')[copyIndex('loadBalancingRules')].protocol]",
+                            "loadDistribution": "[parameters('lbRules')[copyIndex('loadBalancingRules')].loadDistribution]",
+                            "disableOutboundSnat": "[parameters('lbRules')[copyIndex('loadBalancingRules')].disableOutboundSnat]",
                             "backendAddressPool": {
                                 "id": "[variables('lbPoolID')]"
                             },
