@@ -11,12 +11,9 @@
             "name": "[parameters('storage').name]",
             "apiVersion": "2016-01-01",
             "location": "[resourceGroup().location]",
-            "sku": {
-              "name": "[parameters('storage').type]"
-            },
-            "kind": "Storage",
-            "properties": {
-            }
+            "sku": "[parameters('storage').sku]",
+            "kind": "[parameters('storage').kind]",
+            "properties": "[parameters('storage').properties]"
         }
     ],
     "outputs": {}

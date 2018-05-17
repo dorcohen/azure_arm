@@ -13,7 +13,6 @@
         "vnetId": "[resourceId(parameters('vnet').groupName,'Microsoft.Network/virtualNetworks', parameters('vnet').name)]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet').name)]",
         "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancer').name)]",
-        "frontEndIPConfigID": "[concat(variables('lbId'),'/frontendIPConfigurations/',parameters('loadBalancer').frontend.name)]",
         "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('loadBalancer').backend.name)]"
     },
     "resources": [

@@ -1,0 +1,66 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storage": { "type": "object" },
+        "vm": { "type": "object" },
+        "nic": { "type": "object" },
+        "as": { "type": "object" },
+        "image": { "type": "object" },
+        "count": { "type": "int" }
+
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2017-03-30",
+            "name": "[concat(parameters('vm').name,'-', copyindex(1))]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "[resourceGroup().location]",
+            "dependsOn":[
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('nic').name,'-', copyindex(1))]"
+            ],
+            "copy": {
+                "name": "bastion-vm-loop",
+                "count": "[parameters('count')]"
+            },
+            "properties": {
+                "osProfile": {
+                    "computerName": "[parameters('vm').name]",
+                    "adminUsername": "[parameters('vm').adminUsername]",
+                    "adminPassword": "[parameters('vm').adminPassword]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vm').size]"
+                },
+                "storageProfile": {
+                    "imageReference": "[parameters('image')]",
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS"
+                        }
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('nic').name,'-', copyindex(1)))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "[parameters('vm').bootDiagnostics]",
+                        "storageUri": "[reference(resourceId(parameters('storage').groupName, 'Microsoft.Storage/storageAccounts', parameters('storage').name), '2015-06-15').primaryEndpoints['blob']]"
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('as').name)]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
