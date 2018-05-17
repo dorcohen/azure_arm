@@ -8,12 +8,12 @@
     "resources": [
         {
             "apiVersion": "2017-12-01",
-            "name": "[parameters('resource').as.name]",
+            "name": "[parameters('resource').availabilitySet.name]",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[resourceGroup().location]",
             "properties": {
-                "platformFaultDomainCount": "[parameters('resource').as.platformFaultDomainCount]",
-                "platformUpdateDomainCount": "[parameters('resource').as.platformUpdateDomainCount]"
+                "platformFaultDomainCount": "[parameters('resource').availabilitySet.platformFaultDomainCount]",
+                "platformUpdateDomainCount": "[parameters('resource').availabilitySet.platformUpdateDomainCount]"
             },
             "sku": {
                 "name": "Aligned"
