@@ -18,9 +18,6 @@
             "name": "[concat(parameters('resource').nic.name,'-', copyindex(1))]",
             "type": "Microsoft.Network/networkInterfaces",
             "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('resource').nsg.name)]"
-            ],
             "copy": {
                 "name": "nicLoop",
                 "count": "[parameters('resource').count]"
