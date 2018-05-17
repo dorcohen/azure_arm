@@ -39,7 +39,32 @@
                     }
                 ],
                 "backendAddressPools": [ { "name": "[parameters('resource').loadBalancer.backend.name]" } ],
-                "loadBalancingRules": "[parameters('lbRules')]",
+                "copy": [{
+                    "name": "loadBalancingRules",
+                    "count": "[length(parameters('lbRules').lbRules)]",
+                    "input": {
+                        "lun": "[copyIndex('loadBalancingRules')]",
+                        "name": "[parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].name]",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('frontEndIPConfigID')]"
+                            },
+                            "frontendPort": "[parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].frontendPort]",
+                            "backendPort": "[parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].backendPort]",
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "Tcp",
+                            "loadDistribution": "SourceIP",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[variables('lbPoolID')]"
+                            },
+                            "probe": {
+                                "id": "[concat(variables('lbId'),'/probes/',parameters('lbRules').lbRules[copyIndex('loadBalancingRules')].probeName)]"
+                            }
+                        }
+                    }
+                }],
                 "probes": "[parameters('probes')]",
                 "inboundNatRules": [],
                 "outboundNatRules": [],
