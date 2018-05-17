@@ -1,0 +1,120 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resource": { "type": "object" },
+        "vnet": { "type": "object" }
+    },
+    "variables": {
+        "vnetId": "[resourceId(parameters('vnet').groupName,'Microsoft.Network/virtualNetworks', parameters('vnet').name)]",
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('resource').subnet.name)]",
+        "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('resource').loadBalancer.name)]",
+        "frontEndIPConfigID": "[concat(variables('lbId'),'/frontendIPConfigurations/',parameters('resource').loadBalancer.frontend.name)]",
+        "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('resource').loadBalancer.backend.name)]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-10-01",
+            "condition": "[equals(parameters('resource').loadBalancer.enable, 'true')]",
+            "name": "[parameters('resource').loadBalancer.name]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('resource').loadBalancer.sku]"
+            },
+            "dependsOn": [],
+            "scale": null,
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "[parameters('resource').loadBalancer.frontend.name]",
+                        "properties": {
+                            "privateIPAllocationMethod": "[parameters('resource').loadBalancer.privateIPAllocationMethod]",
+                            "subnet": {
+                                "id": "[variables('subnetId')]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "[parameters('resource').loadBalancer.backend.name]"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('frontEndIPConfigID')]"
+                            },
+                            "frontendPort": 22,
+                            "backendPort": 22,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "Tcp",
+                            "loadDistribution": "SourceIP",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[variables('lbPoolID')]"
+                            },
+                            "probe": {
+                                "id": "[concat(variables('lbId'),'/probes/shhHealthProbe')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "RDP",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('frontEndIPConfigID')]"
+                            },
+                            "frontendPort": 3389,
+                            "backendPort": 3389,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "Tcp",
+                            "loadDistribution": "SourceIP",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[variables('lbPoolID')]"
+                            },
+                            "probe": {
+                                "id": "[concat(variables('lbId'),'/probes/rdpHealthProbe')]"
+                            }
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "shhHealthProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 22,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    },
+                    {
+                        "name": "rdpHealthProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 3389,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+                ],
+                "inboundNatRules": [],
+                "outboundNatRules": [],
+                "inboundNatPools": []
+            }
+        }
+    ],
+    "outputs": {
+        "subscriptionOutput": {
+            "type": "Object",
+            "value": "[deployment()]"
+        }
+    }
+}
