@@ -5,7 +5,7 @@
         "storage": { "type": "object" },
         "vm": { "type": "object" },
         "nic": { "type": "object" },
-        "as": { "type": "object" },
+        "availabilitySet": { "type": "object" },
         "image": { "type": "object" },
         "count": { "type": "int" }
 
@@ -57,7 +57,7 @@
                     }
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('as').name)]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySet').name)]"
                 }
             }
         }
