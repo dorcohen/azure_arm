@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "resource": { "type": "object" },
-        "nsgRoles": { "type": "object" }
+        "nsgRoles": { "type": "array" }
     },
     "variables": {},
     "resources": [
