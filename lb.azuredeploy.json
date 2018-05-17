@@ -2,43 +2,44 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "resource": { "type": "object" },
+        "loadBalancer": { "type": "object" },
         "vnet": { "type": "object" },
+        "subnet": { "type": "object" },
         "probes": { "type": "array" },
         "lbRules": { "type": "array" }
     },
     "variables": {
         "vnetId": "[resourceId(parameters('vnet').groupName,'Microsoft.Network/virtualNetworks', parameters('vnet').name)]",
-        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('resource').subnet.name)]",
-        "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('resource').loadBalancer.name)]",
-        "frontEndIPConfigID": "[concat(variables('lbId'),'/frontendIPConfigurations/',parameters('resource').loadBalancer.frontend.name)]",
-        "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('resource').loadBalancer.backend.name)]"
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet').name)]",
+        "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancer').name)]",
+        "frontEndIPConfigID": "[concat(variables('lbId'),'/frontendIPConfigurations/',parameters('loadBalancer').frontend.name)]",
+        "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('loadBalancer').backend.name)]"
     },
     "resources": [
         {
             "apiVersion": "2017-10-01",
-            "condition": "[equals(parameters('resource').loadBalancer.enable, 'true')]",
-            "name": "[parameters('resource').loadBalancer.name]",
+            "condition": "[equals(parameters('loadBalancer').enable, 'true')]",
+            "name": "[parameters('loadBalancer').name]",
             "type": "Microsoft.Network/loadBalancers",
             "location": "[resourceGroup().location]",
             "sku": {
-                "name": "[parameters('resource').loadBalancer.sku]"
+                "name": "[parameters('loadBalancer').sku]"
             },
             "dependsOn": [],
             "scale": null,
             "properties": {
                 "frontendIPConfigurations": [
                     {
-                        "name": "[parameters('resource').loadBalancer.frontend.name]",
+                        "name": "[parameters('loadBalancer').frontend.name]",
                         "properties": {
-                            "privateIPAllocationMethod": "[parameters('resource').loadBalancer.privateIPAllocationMethod]",
+                            "privateIPAllocationMethod": "[parameters('loadBalancer').privateIPAllocationMethod]",
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                             }
                         }
                     }
                 ],
-                "backendAddressPools": [ { "name": "[parameters('resource').loadBalancer.backend.name]" } ],
+                "backendAddressPools": [ { "name": "[parameters('loadBalancer').backend.name]" } ],
                 "copy": [{
                     "name": "loadBalancingRules",
                     "count": "[length(parameters('lbRules'))]",
@@ -71,10 +72,5 @@
             }
         }
     ],
-    "outputs": {
-        "subscriptionOutput": {
-            "type": "Object",
-            "value": "[deployment()]"
-        }
-    }
+    "outputs": {}
 }

@@ -3,24 +3,28 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vnet": { "type": "object" },
-        "resource": { "type": "object" }
+        "subnet": { "type": "object" },
+        "loadBalancer": { "type": "object" },
+        "nic": { "type": "object" },
+        "count": { "type": "int" },
+        "nsg": { "type": "object" }
     },
     "variables": {
         "vnetId": "[resourceId(parameters('vnet').groupName,'Microsoft.Network/virtualNetworks', parameters('vnet').name)]",
-        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('resource').subnet.name)]",
-        "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('resource').loadBalancer.name)]",
-        "frontEndIPConfigID": "[concat(variables('lbId'),'/frontendIPConfigurations/',parameters('resource').loadBalancer.frontend.name)]",
-        "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('resource').loadBalancer.backend.name)]"
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet').name)]",
+        "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancer').name)]",
+        "frontEndIPConfigID": "[concat(variables('lbId'),'/frontendIPConfigurations/',parameters('loadBalancer').frontend.name)]",
+        "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('loadBalancer').backend.name)]"
     },
     "resources": [
         {
             "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('resource').nic.name,'-', copyindex(1))]",
+            "name": "[concat(parameters('nic').name,'-', copyindex(1))]",
             "type": "Microsoft.Network/networkInterfaces",
             "location": "[resourceGroup().location]",
             "copy": {
                 "name": "nicLoop",
-                "count": "[parameters('resource').count]"
+                "count": "[parameters('count')]"
             },
             "properties": {
                 "ipConfigurations": [
@@ -40,15 +44,10 @@
                     }
                 ],
                 "networkSecurityGroup": {
-                    "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('resource').nsg.name)]"
+                    "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('nsg').name)]"
                 }
             }
         }
     ],
-    "outputs": {
-        "subscriptionOutput": {
-            "type": "Object",
-            "value": "[deployment()]"
-        }
-    }
+    "outputs": {}
 }
