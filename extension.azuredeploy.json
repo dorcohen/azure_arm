@@ -1,0 +1,31 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vm": { "type": "object" },
+        "extension": { "type": "object" },
+        "count": { "type": "int" }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[parameters('extension').name]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "extension-loop",
+                "count": "[parameters('count')]"
+            },
+            "properties": {
+              "publisher": "[parameters('extension').publisher]",
+              "type": "[parameters('extension').type]",
+              "typeHandlerVersion": "[parameters('extension').typeHandlerVersion]",
+              "autoUpgradeMinorVersion": "[parameters('extension').autoUpgradeMinorVersion]",
+              "settings": "[parameters('extension').settings]",
+              "protectedSettings": "[parameters('extension').protectedSettings]"
+            }
+          }
+    ],
+    "outputs": {}
+}

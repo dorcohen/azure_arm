@@ -1,0 +1,141 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "global": { "type": "object" }
+    },
+    "variables": {
+        "templatelinkAs": "https://raw.githubusercontent.com/dorcohen/azure_arm/master/as.azuredeploy.json",
+        "templatelinkStorage": "https://raw.githubusercontent.com/dorcohen/azure_arm/master/storage.azuredeploy.json",
+        "templatelinkNic": "https://raw.githubusercontent.com/dorcohen/azure_arm/master/nic.azuredeploy.json",
+        "templatelinkNsg": "https://raw.githubusercontent.com/dorcohen/azure_arm/master/nsg.azuredeploy.json",
+        "templatelinkLb": "https://raw.githubusercontent.com/dorcohen/azure_arm/master/lb.azuredeploy.json",
+        "templatelinkVm": "https://raw.githubusercontent.com/dorcohen/azure_arm/master/vm.azuredeploy.json"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-01-01",
+            "name": "bastionStorageCreation",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('templatelinkStorage')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storage": {"value": "[parameters('global').diagStorage]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "bastionAvailabilitySetCreation",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('templatelinkAs')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "availabilitySet": {"value": "[parameters('global').bastion.availabilitySet]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "bastionNsgCreation",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('templatelinkNsg')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nsgRules": {"value": [
+                            "[parameters('global').nsgRules.ssh]",
+                            "[parameters('global').nsgRules.rdp]",
+                            "[parameters('global').nsgRules.http]"
+                        ] 
+                    },
+                    "nsg": {"value": "[parameters('global').bastion.nsg]" }
+                }
+            },
+            "dependsOn": [ "bastionAvailabilitySetCreation" ]
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "bastionLoadBalancerCreation",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('templatelinkLb')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "probes": {"value": [
+                        "[parameters('global').probes.ssh]",
+                        "[parameters('global').probes.rdp]",
+                        "[parameters('global').probes.http]"
+                        ] 
+                    },
+                    "lbRules": {"value": [
+                        "[parameters('global').lbRules.ssh]",
+                        "[parameters('global').lbRules.rdp]",
+                        "[parameters('global').lbRules.http]"
+                        ] 
+                    },
+                    "vnet": {"value": "[parameters('global').vnet]" },
+                    "subnet": {"value": "[parameters('global').bastion.subnet]" },
+                    "loadBalancer": {"value": "[parameters('global').bastion.loadBalancer]" }
+                }
+            },
+            "dependsOn": [ "bastionAvailabilitySetCreation", "bastionNsgCreation" ]
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "bastionNicCreation",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('templatelinkNic')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vnet": {"value": "[parameters('global').vnet]" },
+                    "subnet": {"value": "[parameters('global').bastion.subnet]" },
+                    "nic": {"value": "[parameters('global').bastion.nic]" },
+                    "loadBalancer": {"value": "[parameters('global').bastion.loadBalancer]" },
+                    "nsg": {"value": "[parameters('global').bastion.nsg]" },
+                    "count": {"value": "[parameters('global').bastion.count]" }
+                }
+            },
+            "dependsOn": [ "bastionAvailabilitySetCreation", "bastionNsgCreation", "bastionLoadBalancerCreation" ]
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "bastionVmCreation",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('templatelinkVm')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storage": {"value": "[parameters('global').diagStorage]" },
+                    "vm": {"value": "[parameters('global').bastion.vm]" },
+                    "nic": {"value": "[parameters('global').bastion.nic]" },
+                    "availabilitySet": {"value": "[parameters('global').bastion.availabilitySet]" },
+                    "image": {"value": "[parameters('global').images.windows2012Image]" },
+                    "count": {"value": "[parameters('global').bastion.count]" }
+                }
+            },
+            "dependsOn": [ "bastionStorageCreation", "bastionAvailabilitySetCreation", "bastionNsgCreation", "bastionLoadBalancerCreation", "bastionNicCreation" ]
+        }
+    ]
+}

@@ -1,0 +1,380 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"global":{
+			"value": {
+				"vnet":{
+					"name": "main-vnet",
+					"groupName": "main-net"
+				},
+				"diagStorage":{
+					"name": "xlcstoragedev",
+					"groupName": "bastion",
+					"kind": "Storage",
+					"sku": {
+						"name": "Standard_RAGRS",
+						"tier": "Standard"
+					},
+					"properties": {
+						"networkAcls": {
+							"bypass": "AzureServices",
+							"virtualNetworkRules": [],
+							"ipRules": [],
+							"defaultAction": "Allow"
+						},
+						"supportsHttpsTrafficOnly": false,
+						"encryption": {
+							"services": {
+								"file": {
+									"enabled": true
+								},
+								"blob": {
+									"enabled": true
+								}
+							},
+							"keySource": "Microsoft.Storage"
+						}
+					}
+				},
+				"keyVault": {
+					"name": "xlckeyvault-dev",
+					"groupName": "security"
+				},
+				"bastion": {
+					"count": 2,
+					"subnet":{
+						"name": "bastion-subnet"
+					},
+					"vm":{
+						"name": "bastion-vm",
+						"bootDiagnostics": true
+					},
+					"nic": {
+						"name": "bastion-nic"
+					},
+					"availabilitySet": {
+						"name": "bastion-availability-set",
+						"PlatformFaultDomainCount": 2,
+                		"PlatformUpdateDomainCount": 5
+					},
+					"loadBalancer": {
+						"name": "bastion-load-balancer",
+						"enable": "true",
+						"sku": "Basic",
+						"backend": { "name": "bastion-backend-pools" },
+						"frontend": { "name": "bastion-frontend-ip" },
+						"privateIPAllocationMethod": "Dynamic"
+					},
+					"nsg": {
+						"name": "bastion-nsg"
+					}
+				},
+				"images": {
+					"windows2012Image": {
+						"publisher": "MicrosoftWindowsServer",
+						"offer": "WindowsServer",
+						"sku": "2012-Datacenter",
+						"version": "latest"
+					},
+					"windows2016Image": {
+						"publisher": "MicrosoftWindowsServer",
+						"offer": "WindowsServer",
+						"sku": "2016-Datacenter",
+						"version": "latest"
+					},
+					"linuxRedhatImage": {
+						"publisher": "RedHat",
+						"offer": "RHEL",
+						"sku": "7-RAW",
+						"version": "latest"
+					},
+					"linuxUbuntuImage": {
+						"publisher": "Canonical",
+						"offer": "UbuntuServer",
+						"sku": "16.04-LTS",
+						"version": "latest"
+					}
+				},
+				"nsgRules" : {
+					"ssh" : {
+                        "name": "allow-ssh",
+                        "properties": {
+                            "priority": 1000,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "22"
+                            
+                        }
+					},
+					"rdp" : {
+                        "name": "allow-rdp",
+                        "properties": {
+                            "priority": 1001,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "3389"
+                            
+						}
+					},
+					"http": {
+                        "name": "allow-http",
+                        "properties": {
+                            "priority": 1002,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "80"
+                        }
+                    },
+                    "https":{
+                        "name": "allow-https",
+                        "properties": {
+                            "priority": 1003,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "443"
+                        }
+					},
+					"chef-oc-bifrost":{
+                        "name": "chef-oc-bifrost",
+                        "properties": {
+                            "priority": 1010,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "9463"
+                        }
+                    },
+                    "chef-oc-id":{
+                        "name": "chef-oc-id",
+                        "properties": {
+                            "priority": 1011,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "9090"
+                        }
+                    },
+                    "chef-opscode-erchef":{
+                        "name": "chef-opscode-erchef",
+                        "properties": {
+                            "priority": 1012,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "8000"
+                        }
+                    },
+                    "chef-opscode-solr4":{
+                        "name": "chef-opscode-solr4",
+                        "properties": {
+                            "priority": 1013,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "8983"
+                        }
+                    },
+                    "chef-postgresql":{
+                        "name": "chef-postgresql",
+                        "properties": {
+                            "priority": 1014,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "5432"
+                        }
+                    },
+                    "chef-rabbitmq":{
+                        "name": "chef-rabbitmq",
+                        "properties": {
+                            "priority": 1015,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "5672"
+                        }
+                    },
+                    "chef-redis_lb":{
+                        "name": "chef-redis_lb",
+                        "properties": {
+                            "priority": 1016,
+                            "protocol": "Tcp",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "16379"
+                        }
+                    }
+				},
+				"lbRules": {
+                    "ssh": {
+						"name": "SSH",
+						"frontendPort": 22,
+						"backendPort": 22,
+						"probeName": "shhHealthProbe",
+						"enableFloatingIP": false,
+						"idleTimeoutInMinutes": 4,
+						"protocol": "Tcp",
+						"loadDistribution": "SourceIP",
+						"disableOutboundSnat": false
+					},
+                    "rdp": {
+						"name": "RDP",
+						"frontendPort": 3389,
+						"backendPort": 3389,
+						"probeName": "rdpHealthProbe",
+						"enableFloatingIP": false,
+						"idleTimeoutInMinutes": 4,
+						"protocol": "Tcp",
+						"loadDistribution": "SourceIP",
+						"disableOutboundSnat": false
+					},
+					"http": {
+						"name": "HTTP",
+						"frontendPort": 80,
+						"backendPort": 80,
+						"probeName": "httpHealthProbe",
+						"enableFloatingIP": false,
+						"idleTimeoutInMinutes": 4,
+						"protocol": "Tcp",
+						"loadDistribution": "SourceIP",
+						"disableOutboundSnat": false
+					},
+					"https": {
+						"name": "HTTPS",
+						"frontendPort": 443,
+						"backendPort": 443,
+						"probeName": "httpsHealthProbe",
+						"enableFloatingIP": false,
+						"idleTimeoutInMinutes": 4,
+						"protocol": "Tcp",
+						"loadDistribution": "SourceIP",
+						"disableOutboundSnat": false
+                    }
+				},
+				"probes": {
+                    "ssh": {
+                        "name": "shhHealthProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 22,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    },
+                    "rdp": {
+                        "name": "rdpHealthProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 3389,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+					},
+					"http": {
+                        "name": "httpHealthProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 80,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+					},
+					"https": {
+                        "name": "httpsHealthProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 443,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+				},
+				"extensions" :{
+					"chef": {
+						"name": "chef-extension",
+						"publisher": "Microsoft.Azure.Extensions",
+						"type": "CustomScript",
+						"typeHandlerVersion": "2.0",
+						"autoUpgradeMinorVersion": true,
+						"settings": {
+							"fileUris": [ "https://gitlab.com/snippets/1712654/raw" ]
+						},
+						"protectedSettings": {
+							"commandToExecute": "sh raw"
+						}
+					},
+					"domainController":{
+						"publisher": "Microsoft.Powershell",
+						"type": "DSC",
+						"typeHandlerVersion": "2.9",
+						"autoUpgradeMinorVersion": true,
+						"settings": {
+							"configuration": {
+								"url": "https://liamazurescripts.blob.core.windows.net/azurescripts/DSC-AD.zip",
+								"script": "DSC-AD.ps1",
+								"function": "ADCreate"
+							},
+							"configurationArguments": {
+								"safemodeAdministratorCred": { 
+									"UserName": "nobody",
+									"Password": "PrivateSettingsRef:Password"
+								},
+								"domainCred": { 
+									"UserName": "DomainAdmin",
+									"Password": "PrivateSettingsRef:Password"
+								},
+								"domainName": "xlc.local"
+							},
+							"configurationData": {
+								"url": "https://liamazurescripts.blob.core.windows.net/azurescripts/DSC-AD.psd1"
+							}
+						},
+						"protectedSettings": {
+							"items": {
+								"Password": "P@ssw0rd!123"
+							}
+						}
+					}
+				}
+			}
+		}
+    }
+}
