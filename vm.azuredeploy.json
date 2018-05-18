@@ -18,7 +18,7 @@
             "type": "Microsoft.Compute/virtualMachines",
             "location": "[resourceGroup().location]",
             "copy": {
-                "name": "bastion-vm-loop",
+                "name": "vm-loop",
                 "count": "[parameters('count')]"
             },
             "properties": {
