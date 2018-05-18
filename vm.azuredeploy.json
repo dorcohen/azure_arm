@@ -17,9 +17,6 @@
             "name": "[concat(parameters('vm').name,'-', copyindex(1))]",
             "type": "Microsoft.Compute/virtualMachines",
             "location": "[resourceGroup().location]",
-            "dependsOn":[
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('nic').name,'-', copyindex(1))]"
-            ],
             "copy": {
                 "name": "bastion-vm-loop",
                 "count": "[parameters('count')]"

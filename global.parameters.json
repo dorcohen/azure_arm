@@ -23,18 +23,7 @@
 							"ipRules": [],
 							"defaultAction": "Allow"
 						},
-						"supportsHttpsTrafficOnly": false,
-						"encryption": {
-							"services": {
-								"file": {
-									"enabled": true
-								},
-								"blob": {
-									"enabled": true
-								}
-							},
-							"keySource": "Microsoft.Storage"
-						}
+						"supportsHttpsTrafficOnly": false
 					}
 				},
 				"keyVault": {
