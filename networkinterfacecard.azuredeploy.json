@@ -29,7 +29,7 @@
                         "name": "ipconfig",
                         "properties": {
                             "subnet": {
-                                "id": "[concat(reference(concat('Microsoft.Network/virtualNetworks', parameters('vnet').name),'2016-12-01', 'Full').resourceId, '/subnets/', parameters('subnet').name)]"
+                                "id": "[concat(reference(concat('Microsoft.Network/virtualNetworks/', parameters('vnet').name),'2016-12-01', 'Full').resourceId, '/subnets/', parameters('subnet').name)]"
                             },
                             "loadBalancerBackendAddressPools": [
                                 {
