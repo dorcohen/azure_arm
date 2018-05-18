@@ -1,0 +1,72 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet": { "type": "object" },
+        "vnetGateway": { "type": "object" }, 
+        "pip": { "type": "object" }, 
+        "lng": { "type": "object" }, 
+        "gatewaySubnet": { "type": "object" } 
+    },
+    "variables": {
+        "vnetId": "[resourceId(parameters('vnet').groupName,'Microsoft.Network/virtualNetworks', parameters('vnet').name)]",
+        "gatewaySubnetId": "[concat(variables('vnetId'), '/subnets/',  parameters('gatewaySubnet').name)]",
+        "pipId": "[resourceId(parameters('pip').groupName, 'Microsoft.Network/publicIPAddresses', parameters('pip').name)]",
+        "vnetGatewayId": "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('vnetGateway').name)]",
+        "lngId": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('lng').name)]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-06-01",
+            "name": "[parameters('vnetGateway').name]",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "gatewayType": "[parameters('vnetGateway').gatewayType]",
+                "ipConfigurations": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('gatewaySubnetId')]"
+                            },
+                            "publicIpAddress": {
+                                "id": "[variables('pipId')]"
+                            }
+                        }
+                    }
+                ],
+                "vpnType": "[parameters('vnetGateway').vpnType]",
+                "sku": {
+                    "name": "[parameters('vnetGateway').sku]",
+                    "tier": "[parameters('vnetGateway').sku]"
+                },
+                "enableBgp": "[parameters('vnetGateway').bgp.enable]",
+                "bgpSettings": {
+                    "asn": "[parameters('vnetGateway').bgp.asn]"
+                }
+            }
+        },
+        {
+            "comments": "TODO: at the moment the script only defines one connection, depending on the requirement this needs to be extended to create multiple connections",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('vnetGateway').connections[0].name]",
+            "type": "Microsoft.Network/connections",
+            "location": "[resourceGroup().location]",
+            "properties": {
+              "virtualNetworkGateway1": {
+                "id": "[variables('vnetGatewayId')]"
+              },
+              "localNetworkGateway2": {
+                "id": "[variables('lngId')]"
+              },
+              "connectionType": "[parameters('vnetGateway').connections[0].type]",
+              "enableBgp": false,
+              "routingWeight": 10,
+              "sharedKey": "[parameters('vnetGateway').connections[0].sharedKey]"
+            }
+          }
+    ],
+    "outputs": {}
+}

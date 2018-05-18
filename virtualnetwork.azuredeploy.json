@@ -2,18 +2,23 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "nsg": { "type": "object" },
-        "nsgRules": { "type": "array" }
+        "vnet": { "type": "object" },
+        "subnets": { "type": "array" } 
     },
     "variables": {},
     "resources": [
         {
-            "apiVersion": "2017-10-01",
-            "name": "[parameters('nsg').name]",
-            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vnet').name]",
             "location": "[resourceGroup().location]",
             "properties": {
-                "securityRules": "[parameters('nsgRules')]"
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnet').addressPrefix]"
+                    ]
+                },
+                "subnets": "[parameters('subnets')]"
             }
         }
     ],
