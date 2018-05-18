@@ -10,7 +10,7 @@
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[parameters('extension').name]",
+            "name": "[concat(parameters('vm').name,'-', copyindex(1),'/',parameters('extension').name)]",
             "apiVersion": "2017-12-01",
             "location": "[resourceGroup().location]",
             "copy": {
