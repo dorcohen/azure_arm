@@ -38,7 +38,7 @@
                             "storageAccountType": "Premium_LRS"
                         }
                     },
-                    "dataDisks": []
+                    "dataDisks": "[parameters('vm').dataDisks]"
                 },
                 "networkProfile": {
                     "networkInterfaces": [

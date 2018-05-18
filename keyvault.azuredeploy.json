@@ -1,0 +1,30 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVault": { "type": "object" }
+    },
+    "variables": {
+        "tenantId": "[subscription().tenantId]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[parameters('keyVault').name]",
+            "apiVersion": "2016-10-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "enabledForDeployment": "[parameters('keyVault').enableVaultForDeployment]",
+                "enabledForDiskEncryption": "[parameters('keyVault').enableVaultForDiskEncryption]",
+                "enabledForTemplateDeployment": "[parameters('keyVault').enabledForTemplateDeployment]",
+                "tenantId": "[variables('tenantId')]",
+                "accessPolicies": "[parameters('keyVault').accessPolicies]",
+                "sku": {
+                    "name": "[parameters('keyVault').skuName]",
+                    "family": "[parameters('keyVault').family]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
