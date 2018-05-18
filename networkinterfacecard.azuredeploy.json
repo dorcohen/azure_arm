@@ -10,8 +10,6 @@
         "nsg": { "type": "object" }
     },
     "variables": {
-        "vnetId": "[resourceId(parameters('vnet').groupName,'Microsoft.Network/virtualNetworks', parameters('vnet').name)]",
-        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet').name)]",
         "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancer').name)]",
         "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('loadBalancer').backend.name)]"
     },
@@ -31,7 +29,7 @@
                         "name": "ipconfig",
                         "properties": {
                             "subnet": {
-                                "id": "[variables('subnetId')]"
+                                "id": "[concat(reference(concat('Microsoft.Network/virtualNetworks', parameters('vnet').name),'2016-12-01', 'Full').resourceId, '/subnets/', parameters('subnet').name)]"
                             },
                             "loadBalancerBackendAddressPools": [
                                 {
