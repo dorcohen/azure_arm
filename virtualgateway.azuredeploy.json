@@ -62,7 +62,11 @@
               "connectionType": "[parameters('vnetGateway').connections[0].type]",
               "enableBgp": false,
               "routingWeight": 10,
-              "sharedKey": "[parameters('vnetGateway').connections[0].sharedKey]"
+              "sharedKey": "[parameters('vnetGateway').connections[0].sharedKey]",
+              "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworkGateways/', parameters('vnetGateway').name)]",
+                "[concat('Microsoft.Network/localNetworkGateways/', parameters('lng').name)]"
+              ]
             }
           }
     ],
