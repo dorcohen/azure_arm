@@ -42,10 +42,8 @@
                     "name": "[parameters('vnetGateway').sku]",
                     "tier": "[parameters('vnetGateway').sku]"
                 },
-                "enableBgp": "[parameters('vnetGateway').bgp.enable]",
-                "bgpSettings": {
-                    "asn": "[parameters('vnetGateway').bgp.asn]"
-                }
+                "enableBgp": "[parameters('vnetGateway').enableBgp]",
+                "bgpSettings": "[parameters('vnetGateway').bgp]"
             }
         },
         {
