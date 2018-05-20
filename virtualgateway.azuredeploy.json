@@ -65,8 +65,7 @@
                 "sharedKey": "[parameters('vnetGateway').connections[0].sharedKey]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworkGateways/', parameters('vnetGateway').name)]",
-                "[concat('Microsoft.Network/localNetworkGateways/', parameters('lng').name)]"
+                "[concat('Microsoft.Network/virtualNetworkGateways/', parameters('vnetGateway').name)]"
               ]
           }
     ],
