@@ -3,9 +3,9 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vnet": { "type": "object" },
+        "pip":  { "type": "object" }, 
+        "lng":  { "type": "object" }, 
         "vnetGateway": { "type": "object" }, 
-        "pip": { "type": "object" }, 
-        "lng": { "type": "object" }, 
         "gatewaySubnet": { "type": "object" } 
     },
     "variables": {
@@ -53,21 +53,21 @@
             "type": "Microsoft.Network/connections",
             "location": "[resourceGroup().location]",
             "properties": {
-              "virtualNetworkGateway1": {
-                "id": "[variables('vnetGatewayId')]"
-              },
-              "localNetworkGateway2": {
-                "id": "[variables('lngId')]"
-              },
-              "connectionType": "[parameters('vnetGateway').connections[0].type]",
-              "enableBgp": false,
-              "routingWeight": 10,
-              "sharedKey": "[parameters('vnetGateway').connections[0].sharedKey]",
-              "dependsOn": [
+                "virtualNetworkGateway1": {
+                    "id": "[variables('vnetGatewayId')]"
+                },
+                "localNetworkGateway2": {
+                    "id": "[variables('lngId')]"
+                },
+                "connectionType": "[parameters('vnetGateway').connections[0].type]",
+                "enableBgp": false,
+                "routingWeight": 10,
+                "sharedKey": "[parameters('vnetGateway').connections[0].sharedKey]"
+            },
+            "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworkGateways/', parameters('vnetGateway').name)]",
                 "[concat('Microsoft.Network/localNetworkGateways/', parameters('lng').name)]"
               ]
-            }
           }
     ],
     "outputs": {}
