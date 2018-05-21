@@ -1,0 +1,32 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "solution": { "type": "object" },
+        "workspace": { "type": "object" }
+     },
+    "variables": { 
+        "solutionName": "[concat(parameters('solution').name, '[', parameters('workspace').name, ']')]"
+     },
+    "resources": [
+        {
+            "name": "[variables('solutionName')]",
+            "type": "Microsoft.OperationsManagement/solutions",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[parameters('workspace').location]",
+            "plan": {
+                "name": "[variables('solutionName')]",
+                "product": "[parameters('solution').name]",
+                "publisher": "[parameters('solution').publisher]",
+                "promotionCode": ""
+            },
+            "properties": {
+                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspace').name)]",
+                "referencedResources": [],
+                "containedResources": [
+                    "[resourceId('Microsoft.OperationalInsights/workspaces/views/', parameters('workspace').name, parameters('solution').name)]"
+                ]
+            }
+        }
+    ]
+}

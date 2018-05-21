@@ -23,7 +23,7 @@
             },
             "properties": {
                 "osProfile": {
-                    "computerName": "[parameters('vm').name]",
+                    "computerName": "[concat(parameters('vm').name,'-', copyindex(1))]",
                     "adminUsername": "[parameters('vm').adminUsername]",
                     "adminPassword": "[parameters('vm').adminPassword]"
                 },

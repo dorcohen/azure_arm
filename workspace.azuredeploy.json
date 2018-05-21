@@ -1,0 +1,26 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": { "type": "object" }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[parameters('workspace').name]",
+            "apiVersion": "2017-03-15-preview",
+            "location": "[parameters('workspace').location]",
+            "properties": {
+                "sku": {
+                    "Name": "[parameters('workspace').sku]"
+                },
+                "features": {
+                    "searchVersion": 1
+                }
+            },
+            "resources": [ ]
+        }
+    ],
+    "outputs": {}
+}
