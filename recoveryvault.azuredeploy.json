@@ -2,8 +2,7 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "recoveryvault": { "type": "object" },
-        "protecteditem": { "type": "object" }
+        "recoveryvault": { "type": "object" }
     },
     "variables": {},
     "resources": [
@@ -25,22 +24,7 @@
             "dependsOn": [ "[concat('Microsoft.RecoveryServices/vaults/', parameters('recoveryvault').name)]" ],
             "location": "[resourceGroup().location]",
             "properties": "[parameters('recoveryvault').backupPolicy.properties]"
-          },
-          {
-            "name": "[concat(parameters('protecteditem').existingRecoveryServicesVault, '/', parameters('protecteditem').backupFabric, '/', parameters('protecteditem').v2VmContainer, concat(parameters('protecteditem').existingVirtualMachinesResourceGroup,';',parameters('protecteditem').existingVirtualMachines[copyIndex()]), '/', parameters('protecteditem').v2Vm, concat(parameters('protecteditem').existingVirtualMachinesResourceGroup,';',parameters('protecteditem').existingVirtualMachines[copyIndex()]))]",
-            "apiVersion": "2016-06-01",
-            "location": "[resourceGroup().location]",
-            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
-            "copy": {
-                "name": "v2VmsCopy",
-                "count": "[length(parameters('protecteditem').existingVirtualMachines)]"
-            },
-            "properties": {
-                "protectedItemType": "[parameters('protecteditem').v2VmType]",
-                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies',parameters('protecteditem').existingRecoveryServicesVault,parameters('protecteditem').existingBackupPolicy )]",
-                "sourceResourceId": "[resourceId(subscription().subscriptionId,parameters('protecteditem').existingVirtualMachinesResourceGroup,'Microsoft.Compute/virtualMachines',parameters('protecteditem').existingVirtualMachines[copyIndex()])]"
-            }
-    }
+          }
     ],
     "outputs": {}
 }
