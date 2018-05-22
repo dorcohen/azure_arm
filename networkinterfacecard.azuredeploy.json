@@ -7,7 +7,7 @@
         "loadBalancer": { "type": "object" },
         "nic": { "type": "object" },
         "count": { "type": "int" },
-        "nsg": { "type": "object" }
+        "nsg": { "type": "object", "defaultValue": {} }
     },
     "variables": {
         "vnetId": "[resourceId(parameters('vnet').groupName,'Microsoft.Network/virtualNetworks', parameters('vnet').name)]",
@@ -42,9 +42,13 @@
                         }
                     }
                 ],
-                "networkSecurityGroup": {
-                    "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('nsg').name)]"
-                }
+                "copy": [{
+                    "name": "nsg-loop",
+                    "count": 0,
+                    "networkSecurityGroup": {
+                        "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('nsg').name)]"
+                    }
+                }]
             }
         }
     ],
