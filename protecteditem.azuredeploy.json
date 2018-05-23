@@ -10,12 +10,21 @@
     },
     "variables": {},
     "resources": [
-
-    ],
-    "outputs": {
-      "vault": {
-        "type": "string",
-        "value":"dor"
+      {
+        "name": "[concat(parameters('recoveryVault').groupName, '/', parameters('recoveryVault').name, '/', parameters('Container').backupFabric, '/', parameters('Container').v2VmContainer, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex()), '/', parameters('Container').v2Vm, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex()))]",
+        "apiVersion": "2016-06-01",
+        "location": "[resourceGroup().location]",
+        "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+        "copy": {
+          "name": "v2VmsCopy",
+          "count": "[parameters('count')]"
+        },
+        "properties": {
+          "protectedItemType": "[parameters('Container').v2VmType]",
+          "policyId": "[resourceId(parameters('recoveryVault').groupName,'Microsoft.RecoveryServices/vaults/backupPolicies',parameters('recoveryVault').name,parameters('policyName') )]",
+          "sourceResourceId": "[resourceId(subscription().subscriptionId,resourceGroup().name,'Microsoft.Compute/virtualMachines',concat(parameters('vm').name,'-',copyIndex()))]"
+        }
       }
-    }
+    ],
+    "outputs": { }
 }
