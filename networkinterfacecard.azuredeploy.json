@@ -42,7 +42,7 @@
                         }
                     }
                 ],
-                "networkSecurityGroup": "[if(empty(parameters('nsg')),'{}','{\"id\": \"[resourceId(resourceGroup().name, \"Microsoft.Network/networkSecurityGroups\", parameters(\"nsg\").name)]\"}')]"
+                "networkSecurityGroup": {}
             }
         }
     ],
