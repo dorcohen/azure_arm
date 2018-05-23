@@ -11,7 +11,7 @@
     "variables": {},
     "resources": [
       {
-        "name": "[concat(parameters('vm').name,'-',copyIndex(),'backup')]",
+        "name": "[concat(resourceId(parameters('recoveryVault').groupName,'Microsoft.RecoveryServices/vaults/backupPolicies',parameters('recoveryVault').name,parameters('policyName') ),'-','backup' )]",
         "apiVersion": "2016-06-01",
         "location": "[resourceGroup().location]",
         "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
