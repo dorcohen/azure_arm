@@ -4,7 +4,7 @@
     "parameters": {
         "vnet": { "type": "object" },
         "subnet": { "type": "object" },
-        "loadBalancer": { "type": "object" },
+        "loadBalancer": { "type": "object", "defaultValue": {} },
         "nic": { "type": "object" },
         "count": { "type": "int" },
         "nsg": { "type": "object", "defaultValue": {} }
@@ -14,7 +14,8 @@
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet').name)]",
         "lbId": "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancer').name)]",
         "lbPoolID": "[concat(variables('lbId'), '/backendAddressPools/', parameters('loadBalancer').backend.name)]",
-        "nsgRef": { "id" : "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('nsg').name)]" }
+        "nsgRef": { "id" : "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('nsg').name)]" },
+        "lbRef": [{ "id": "[variables('lbPoolID')]" }]
     },
     "resources": [
         {
@@ -34,11 +35,7 @@
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                             },
-                            "loadBalancerBackendAddressPools": [
-                                {
-                                  "id": "[variables('lbPoolID')]"
-                                }
-                              ],
+                            "loadBalancerBackendAddressPools": "[if(empty(parameters('loadBalancer')),parameters('loadBalancer'),variables('lbRef'))]",
                             "privateIPAllocationMethod": "Dynamic"
                         }
                     }
