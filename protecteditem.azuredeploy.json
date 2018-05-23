@@ -13,7 +13,7 @@
       {
         "name": "[concat(parameters('recoveryVault').name, '/', parameters('Container').backupFabric, '/', parameters('Container').v2VmContainer, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex(1)), '/', parameters('Container').v2Vm, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex(1)))]",
         "resourceGroup": "[parameters('recoveryVault').groupName]",
-        "apiVersion": "2016-06-01",
+        "apiVersion": "2017-05-10",
         "location": "[resourceGroup().location]",
         "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
         "copy": {
