@@ -27,6 +27,8 @@
       }
     ],
     "outputs": {
-      "vault": "[resourceId(parameters('recoveryVault').groupName,'Microsoft.RecoveryServices/vaults/backupPolicies',parameters('recoveryVault').name,parameters('policyName') )]"
+      "vault": {
+        "name":"[resourceId(parameters('recoveryVault').groupName,'Microsoft.RecoveryServices/vaults/backupPolicies',parameters('recoveryVault').name,parameters('policyName') )]"
+      }
     }
 }
