@@ -2,23 +2,26 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "protectioncontainer": { "type": "object" }
+      "Container": { "type": "object" },
+      "recoveryVault": { "type": "object" },
+      "policyName": { "type": "string" },
+      "protectedItems": { "type": "array" }
     },
     "variables": {},
     "resources": [
       {
-        "name": "[concat(parameters('protectioncontainer').existingRecoveryServicesVault, '/', parameters('protectioncontainer').backupFabric, '/', parameters('protectioncontainer').v2VmContainer, concat(parameters('protecteditem').existingVirtualMachinesResourceGroup,';',parameters('protecteditem').existingVirtualMachines[copyIndex()]), '/', parameters('protectioncontainer').v2Vm, concat(parameters('protecteditem').existingVirtualMachinesResourceGroup,';',parameters('protecteditem').existingVirtualMachines[copyIndex()]))]",
+        "name": "[concat(parameters('Container').existingRecoveryServicesVault, '/', parameters('Container').backupFabric, '/', parameters('Container').v2VmContainer, concat(resourceGroup().name,';',parameters('protectedItems').vm.name,'-',copyIndex()), '/', parameters('Container').v2Vm, concat(resourceGroup().name,';',parameters('protectedItems').vm.name[copyIndex()]))]",
         "apiVersion": "2016-06-01",
         "location": "[resourceGroup().location]",
         "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
         "copy": {
           "name": "v2VmsCopy",
-          "count": "[length(parameters('protecteditem').existingVirtualMachines)]"
+          "count": "[length(parameters('protectedItems').count)]"
         },
         "properties": {
-          "protectedItemType": "[parameters('protectioncontainer').v2VmType]",
-          "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies',parameters('protectioncontainer').existingRecoveryServicesVault,parameters('protectioncontainer').existingBackupPolicy )]",
-          "sourceResourceId": "[resourceId(subscription().subscriptionId,parameters('protecteditem').existingVirtualMachinesResourceGroup,'Microsoft.Compute/virtualMachines',parameters('protecteditem').existingVirtualMachines[copyIndex()])]"
+          "protectedItemType": "[parameters('Container').v2VmType]",
+          "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies',parameters('recoveryVault').name,parameters('policyName') )]",
+          "sourceResourceId": "[resourceId(subscription().subscriptionId,resourceGroup().name,'Microsoft.Compute/virtualMachines',concat(parameters('protectedItems').vm.name,'-',copyIndex()))]"
         }
       }
     ],

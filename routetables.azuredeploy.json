@@ -5,17 +5,24 @@
         "subnet": { "type": "object" },
         "routes": { "type": "array" }
     },
-    "variables": {},
+    "variables": {
+        "udrName": "[concat(parameters('subnet').name, '-udr')]"
+    },
     "resources": [
         {
             "type": "Microsoft.Network/routeTables",
-            "name": "[concat(parameters('subnet').name, '-udr')]",
+            "name": "[variables('udrName')]",
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "properties": {
-              "routes": "[parameters('routes')]"
+                "routes": "[parameters('routes')]"
             }
-          }
+        }
     ],
-    "outputs": {}
+    "outputs": {
+        "resourceID": {
+        "type": "string",
+            "value": "[resourceId('Microsoft.Network/routeTables', variables('udrName'))]"
+        }
+    }
 }
