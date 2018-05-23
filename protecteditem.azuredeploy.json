@@ -11,7 +11,7 @@
     "variables": {},
     "resources": [
       {
-        "name": "[concat('resourceGroups/',parameters('recoveryVault').groupName,'/',parameters('recoveryVault').name, '/', parameters('Container').backupFabric, '/', parameters('Container').v2VmContainer, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex(1)), '/', parameters('Container').v2Vm, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex(1)))]",
+        "name": "[concat(parameters('recoveryVault').groupName,'/',parameters('recoveryVault').name, '/', parameters('Container').backupFabric, '/', parameters('Container').v2VmContainer, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex(1)), '/', parameters('Container').v2Vm, concat(resourceGroup().name,';',parameters('vm').name,'-',copyIndex(1)))]",
         "apiVersion": "2016-06-01",
         "location": "[resourceGroup().location]",
         "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
