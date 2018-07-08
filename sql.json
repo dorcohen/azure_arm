@@ -9,7 +9,7 @@
             "type": "string"
         },
         "protected":{
-            "type": "securestring"
+            "type": "string"
         }
     },
     "resources": [
