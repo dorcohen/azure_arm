@@ -8,7 +8,7 @@
         "sqlServerName": {
             "type": "string"
         },
-        "protected:{
+        "protected":{
             "type": "securestring"
         }
     },
