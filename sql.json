@@ -7,6 +7,9 @@
         },
         "sqlServerName": {
             "type": "string"
+        },
+        "protected:{
+            "type": "string"
         }
     },
     "resources": [
